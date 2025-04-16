@@ -1,4 +1,8 @@
 [flake8]
 max-line-length = 100
-exclude = venv, */migrations/*, __pycache__, *.pyc
-ignore = E501, F401, F841, E722  # TEMP: Remove when cleaned up
+exclude =
+    venv,
+    __pycache__,
+    */migrations/*
+# You can ignore rules like this:
+# ignore = E501,W503
