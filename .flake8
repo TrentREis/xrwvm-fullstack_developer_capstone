@@ -1,8 +1,7 @@
 [flake8]
 max-line-length = 100
-exclude =
+exclude = 
     venv,
     __pycache__,
     */migrations/*
-# You can ignore rules like this:
-# ignore = E501,W503
+ignore = E501, W503
