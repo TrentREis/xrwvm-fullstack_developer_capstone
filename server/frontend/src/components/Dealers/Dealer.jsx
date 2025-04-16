@@ -24,32 +24,53 @@ const Dealer = () => {
   let reviews_url = root_url+`djangoapp/reviews/dealer/${id}`;
   let post_review = root_url+`postreview/${id}`;
   
-  const get_dealer = async ()=>{
+  const get_dealer = async () => {
     const res = await fetch(dealer_url, {
       method: "GET"
     });
     const retobj = await res.json();
-    
-    if(retobj.status === 200) {
-      let dealerobjs = Array.from(retobj.dealer)
-      setDealer(dealerobjs[0])
-    }
-  }
-
-  const get_reviews = async ()=>{
-    const res = await fetch(reviews_url, {
-      method: "GET"
-    });
-    const retobj = await res.json();
-    
-    if(retobj.status === 200) {
-      if(retobj.reviews.length > 0){
-        setReviews(retobj.reviews)
+  
+    if (retobj.status === 200) {
+      if (Array.isArray(retobj.dealer)) {
+        setDealer(retobj.dealer[0]);
       } else {
-        setUnreviewed(true);
+        setDealer(retobj.dealer); // it's already an object
       }
     }
-  }
+  };
+  
+
+  const get_reviews = async () => {
+    try {
+      console.log("Fetching reviews from:", reviews_url);
+      const res = await fetch(reviews_url, {
+        method: "GET"
+      });
+  
+      if (!res.ok) {
+        console.error(`Server responded with status ${res.status}`);
+        setUnreviewed(true);
+        return;
+      }
+  
+      const retobj = await res.json();
+  
+      if (retobj.status === 200 && Array.isArray(retobj.reviews)) {
+        if (retobj.reviews.length > 0) {
+          setReviews(retobj.reviews);
+        } else {
+          setUnreviewed(true);
+        }
+      } else {
+        console.warn("Reviews data missing or invalid:", retobj);
+        setUnreviewed(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch reviews:", error);
+      setUnreviewed(true);
+    }
+  };
+  
 
   const senti_icon = (sentiment)=>{
     let icon = sentiment === "positive"?positive_icon:sentiment==="negative"?negative_icon:neutral_icon;

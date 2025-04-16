@@ -110,15 +110,32 @@ def get_dealerships(request, state="All"):
 # def get_dealer_reviews(request,dealer_id):
 def get_dealer_reviews(request, dealer_id):
     if dealer_id:
-        endpoint = "/fetchReviews/dealer/" + str(dealer_id)
-        reviews = get_request(endpoint)
-        for review_detail in reviews:
-            response = analyze_review_sentiments(review_detail['review'])
-            print(response)
-            review_detail['sentiment'] = response['sentiment']
-        return JsonResponse({"status": 200, "reviews": reviews})
-    else:
-        return JsonResponse({"status": 400, "message": "Bad Request"})
+        try:
+            endpoint = "/fetchReviews/dealer/" + str(dealer_id)
+            reviews = get_request(endpoint)
+
+            if not isinstance(reviews, list):
+                print("Backend returned non-list for reviews:", reviews)
+                return JsonResponse({"status": 200, "reviews": []})
+
+            for review_detail in reviews:
+                try:
+                    review_text = review_detail.get('review', '')
+                    response = analyze_review_sentiments(review_text)
+                    sentiment = response.get('sentiment', 'neutral') if response else 'neutral'
+                    review_detail['sentiment'] = sentiment
+                except Exception as sentiment_error:
+                    print(f"Sentiment analysis failed: {sentiment_error}")
+                    review_detail['sentiment'] = "neutral"
+
+            return JsonResponse({"status": 200, "reviews": reviews})
+
+        except Exception as e:
+            print(f"Error in get_dealer_reviews: {e}")
+            return JsonResponse({"status": 500, "message": "Server error loading reviews"})
+
+    return JsonResponse({"status": 400, "message": "Invalid dealer ID"})
+
 
 
 # Create a `get_dealer_details` view to render the dealer details
