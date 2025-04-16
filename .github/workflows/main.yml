@@ -27,9 +27,10 @@ jobs:
 
       - name: Run flake8 linter
         run: |
-          echo "Running flake8 on all Python files..."
-          find . -name "*.py" -exec flake8 {} +
+          echo "Running flake8 using config file..."
+          flake8 . --config=.flake8
           echo " Python linting completed successfully"
+
 
   lint_js:
     name: Lint JavaScript Files
