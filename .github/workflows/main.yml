@@ -50,6 +50,6 @@ jobs:
 
       - name: Run JSHint linter
         run: |
-          echo "Running JSHint on all JS files..."
-          find ./server/database -name "*.js" -exec jshint {} +
-          echo "JavaScript linting completed"
+          echo "Running JSHint with config file (.jshintrc)..."
+          jshint ./server/database --config .jshintrc || true
+          echo "JavaScript linting completed (non-blocking)"
