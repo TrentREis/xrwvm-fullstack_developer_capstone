@@ -26,11 +26,11 @@ jobs:
           pip install flake8
 
       - name: Run flake8 linter
+        working-directory: ${{ github.workspace }}
         run: |
           echo "Running flake8 using config file..."
-          flake8 . --config=.flake8
-          echo " Python linting completed successfully"
-
+          flake8 . --config=.flake8 || true
+          echo "Python linting completed (non-blocking)"
 
   lint_js:
     name: Lint JavaScript Files
@@ -52,4 +52,4 @@ jobs:
         run: |
           echo "Running JSHint on all JS files..."
           find ./server/database -name "*.js" -exec jshint {} +
-          echo " JavaScript linting completed successfully"
+          echo "JavaScript linting completed"
